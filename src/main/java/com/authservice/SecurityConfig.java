@@ -13,7 +13,7 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/.well-known/jwks.json","/api/v1/register",
+                .requestMatchers("/.well-known/jwks.json","/api/v1/register","/api/v1/customer/register","/api/v1/auth/login",
                         "/oauth/token").permitAll()
                 .anyRequest().authenticated()
             )
