@@ -30,7 +30,7 @@ public class JwtTokenService {
 //	private static final String SECRET="uH7pN2rPeT9vXrWqz8GxVrWbZy9sUwFg4XpEm6nBtOw";
    // private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET.getBytes());
 //Token validity in milliseconds (e.g., 15 minutes)
- private static final long ACCESS_TOKEN_VALIDITY = 1 * 60 * 1000;
+ private static final long ACCESS_TOKEN_VALIDITY = 1 * 60 * 60 * 1000;
  // Refresh token validity (e.g., 7 days)
  private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000;
  
