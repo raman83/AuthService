@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
-
 import com.authservice.dto.TokenResponse;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -20,6 +19,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.crypto.SecretKey;
@@ -41,8 +41,11 @@ public class JwtTokenService {
      this.rsaKey = rsaKey;
  }
 
- public TokenResponse generateToken(String clientId) throws JOSEException {
-     long now = System.currentTimeMillis();
+ public TokenResponse generateToken(String clientId,String role) throws JOSEException {
+     
+	    List<String> scopes = ScopeMappingService.getScopesForRole(role);
+
+	 long now = System.currentTimeMillis();
 
      // Build access token
      
@@ -52,6 +55,7 @@ public class JwtTokenService {
     		        .build(),
     		    new JWTClaimsSet.Builder()
     		        .subject(clientId)
+    	            .claim("scope", String.join(" ", scopes))  // <-- ADD THIS
     		        .jwtID(UUID.randomUUID().toString())
     		        .issueTime(new Date(now))
     		        .expirationTime(new Date(now + ACCESS_TOKEN_VALIDITY))

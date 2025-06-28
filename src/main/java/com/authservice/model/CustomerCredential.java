@@ -25,4 +25,5 @@ public class CustomerCredential {
     private String email;
     private String passwordHash;
     private String customerId; // from customer-service
+    private String role;
 }

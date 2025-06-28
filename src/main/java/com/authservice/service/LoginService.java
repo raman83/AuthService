@@ -1,5 +1,7 @@
 package com.authservice.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.authservice.dto.LoginRequest;
@@ -28,7 +30,7 @@ public class LoginService {
 	        throw new RuntimeException("Invalid credentials");
 	    }
 
-	    TokenResponse token = jwtService.generateToken(creds.getEmail()); // Assume you have a JWT generator
+	    TokenResponse token = jwtService.generateToken(creds.getCustomerId(), creds.getRole());
 	    return token;
 	}
 

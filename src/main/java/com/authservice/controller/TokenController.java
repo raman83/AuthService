@@ -2,14 +2,10 @@ package com.authservice.controller;
 
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.authservice.dto.RefreshTokenRequest;
-import com.authservice.dto.TerminalCredentials;
 import com.authservice.dto.TokenRequest;
 import com.authservice.dto.TokenResponse;
 import com.authservice.service.JwtTokenService;
@@ -46,7 +42,7 @@ public class TokenController {
             return ResponseEntity.status(401).build();
         }
 
-         tokenResponse = jwtTokenService.generateToken(request.getClientId());
+         tokenResponse = jwtTokenService.generateToken(request.getClientId(),"ROLE_SERVICE");
         refreshTokenStore.store( tokenResponse.getRefreshToken(), request.getClientId());
         }
         else if ("refresh_token".equals(grantType)) {
@@ -58,7 +54,7 @@ public class TokenController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
             }
 
-             tokenResponse = jwtTokenService.generateToken(clientId); // sign new JWT
+             tokenResponse = jwtTokenService.generateToken(clientId,"ROLE_CUSTOMER"); // sign new JWT
              if (refreshTokenStore == null) {
             	    throw new IllegalStateException("refreshTokens map is not initialized");
             	}

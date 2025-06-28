@@ -28,6 +28,7 @@ public class CustomerRegistryService {
 	    entity.setEmail(request.getEmail());
 	    entity.setPasswordHash(request.getPassword());
 	    entity.setCustomerId(request.getCustomerId());
+	    entity.setRole(request.getRole());
 	    repository.save(entity);
 	}
 

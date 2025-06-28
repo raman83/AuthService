@@ -11,4 +11,5 @@ public class CustomerRegistrationRequest {
     private String email;
     private String password;
     private String customerId; // Link to customer-service record
+    private String role;
 }
