@@ -2,24 +2,26 @@ package com.authservice.controller;
 
 
 import lombok.RequiredArgsConstructor;
+
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.authservice.dto.TokenRequest;
-import com.authservice.dto.TokenResponse;
-import com.authservice.service.JwtTokenService;
+import com.authcore.dto.TokenRequest;
+import com.authcore.dto.TokenResponse;
+import com.authcore.service.JwtTokenService;
 import com.authservice.service.RefreshTokenStore;
-import com.authservice.service.TerminalRegistryService;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/oauth")
 public class TokenController {
-
-
-    private final TerminalRegistryService terminalRegistryService;
     
 
     private final JwtTokenService jwtTokenService;
@@ -27,6 +29,28 @@ public class TokenController {
     private final  RefreshTokenStore refreshTokenStore;
     
   
+    
+    
+    @PostMapping("/introspect")
+    public ResponseEntity<Map<String, Object>> introspect(@RequestParam("token") String token) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            SignedJWT jwt = SignedJWT.parse(token);
+            boolean isValid = jwtTokenService.validate(token);
+
+            response.put("active", isValid);
+
+            if (isValid) {
+                Map<String, Object> claims = jwt.getJWTClaimsSet().getClaims();
+                response.putAll(claims);
+            }
+        } catch (ParseException e) {
+            response.put("active", false);
+        }
+
+        return ResponseEntity.ok(response);
+    }
 
 
     @PostMapping("/token")
@@ -35,14 +59,7 @@ public class TokenController {
         TokenResponse tokenResponse =null;
 
         if("client_credentials".equals(grantType)){
-    	
-    	boolean valid = terminalRegistryService.validateClient(request.getClientId(), request.getClientSecret());
-
-        if (!valid) {
-            return ResponseEntity.status(401).build();
-        }
-
-         tokenResponse = jwtTokenService.generateToken(request.getClientId(),"ROLE_SERVICE");
+         tokenResponse = jwtTokenService.generateToken(request.getClientId(),request.getClientId(),"ROLE_SERVICE");
         refreshTokenStore.store( tokenResponse.getRefreshToken(), request.getClientId());
         }
         else if ("refresh_token".equals(grantType)) {
@@ -54,7 +71,7 @@ public class TokenController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
             }
 
-             tokenResponse = jwtTokenService.generateToken(clientId,"ROLE_CUSTOMER"); // sign new JWT
+             tokenResponse = jwtTokenService.generateToken(clientId,clientId,"ROLE_CUSTOMER"); // sign new JWT
              if (refreshTokenStore == null) {
             	    throw new IllegalStateException("refreshTokens map is not initialized");
             	}
