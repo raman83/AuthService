@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+consent:
+  service:
+    url: http://localhost:8096/api/v1
+
+
+application:
+  name: auth-service
+
+

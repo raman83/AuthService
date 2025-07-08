@@ -37,7 +37,7 @@ public class TokenController {
 
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-            boolean isValid = jwtTokenService.validate(token);
+            boolean isValid = jwtTokenService.validate(token.toString());
 
             response.put("active", isValid);
 
@@ -59,7 +59,7 @@ public class TokenController {
         TokenResponse tokenResponse =null;
 
         if("client_credentials".equals(grantType)){
-         tokenResponse = jwtTokenService.generateToken(request.getClientId(),request.getClientId(),"ROLE_SERVICE");
+         tokenResponse = jwtTokenService.generateToken(request.getClientId(),request.getUserId(),"ROLE_SERVICE");
         refreshTokenStore.store( tokenResponse.getRefreshToken(), request.getClientId());
         }
         else if ("refresh_token".equals(grantType)) {
@@ -71,7 +71,7 @@ public class TokenController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
             }
 
-             tokenResponse = jwtTokenService.generateToken(clientId,clientId,"ROLE_CUSTOMER"); // sign new JWT
+             tokenResponse = jwtTokenService.generateToken(clientId,request.getUserId(),"ROLE_CUSTOMER"); // sign new JWT
              if (refreshTokenStore == null) {
             	    throw new IllegalStateException("refreshTokens map is not initialized");
             	}
